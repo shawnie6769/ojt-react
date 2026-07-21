@@ -26,9 +26,9 @@ export default function SettingsPage() {
     setSaving(true);
     setError("");
     setSaved(false);
-    const { error } = await supabase
+    const { error } = await getClient()
       .from("settings")
-      .update({ required_hours: settings.required_hours, start_date: settings.start_date })
+      .update({ required_hours: settings.required_hours, start_date: settings.start_date } as never)
       .eq("id", 1);
     if (error) {
       setError(error.message);

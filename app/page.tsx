@@ -28,14 +28,14 @@ export default function Dashboard() {
   useEffect(() => { load(); }, [load]);
 
   async function handleAdd(values: Omit<Session, "id" | "created_at">) {
-    const { error } = await getClient().from("sessions").insert([values]);
+    const { error } = await getClient().from("sessions").insert([values as never]);
     if (error) throw new Error(error.message);
     setShowForm(false);
     load();
   }
 
   async function handleUpdate(id: number, values: Omit<Session, "id" | "created_at">) {
-    const { error } = await getClient().from("sessions").update(values).eq("id", id);
+    const { error } = await getClient().from("sessions").update(values as never).eq("id", id);
     if (error) throw new Error(error.message);
     load();
   }

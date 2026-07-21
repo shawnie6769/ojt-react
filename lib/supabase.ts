@@ -25,8 +25,8 @@ function getSupabase() {
 }
 
 // Lazy singleton — only created when actually called (never during SSR prerender of client components)
-let _client: ReturnType<typeof createClient> | null = null;
-export function getClient() {
+let _client: any = null;
+export function getClient(): any {
   if (!_client) _client = getSupabase();
   return _client;
 }
