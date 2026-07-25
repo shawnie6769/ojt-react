@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState, useCallback } from "react";
 import { getClient, Session, Settings } from "@/lib/supabase";
-import { totalHours, thisWeekSessions, progressPct, fmt } from "@/lib/hours";
+import { totalHours, thisWeekSessions, progressPct, fmt, predictFinishDate } from "@/lib/hours";
 import TapeProgress from "@/components/TapeProgress";
 import SessionCard from "@/components/SessionCard";
 import SessionForm from "@/components/SessionForm";
@@ -51,6 +51,7 @@ export default function Dashboard() {
   const weekHrs  = totalHours(week);
   const pct      = progressPct(logged, settings.required_hours);
   const remaining = Math.max(0, settings.required_hours - logged);
+  const predictedFinish = predictFinishDate(logged, settings.required_hours, settings.start_date);
 
   if (loading) {
     return (
@@ -82,7 +83,7 @@ export default function Dashboard() {
 
         <TapeProgress pct={pct} />
 
-        <div className="mt-4 flex gap-4 text-sm">
+        <div className="mt-4 flex gap-4 text-sm flex-wrap">
           <div>
             <span className="text-muted text-xs font-mono block">Remaining</span>
             <span className="font-mono font-medium">{fmt(remaining)} hrs</span>
@@ -90,6 +91,10 @@ export default function Dashboard() {
           <div className="border-l border-border pl-4">
             <span className="text-muted text-xs font-mono block">This week</span>
             <span className="font-mono font-medium">{fmt(weekHrs)} hrs · {week.length} session{week.length !== 1 ? "s" : ""}</span>
+          </div>
+          <div className="border-l border-border pl-4">
+            <span className="text-muted text-xs font-mono block">Predicted finish</span>
+            <span className="font-mono font-medium">{predictedFinish ?? "Add a start date"}</span>
           </div>
         </div>
       </div>

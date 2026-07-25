@@ -1,5 +1,5 @@
 import { Session } from "./supabase";
-import { parseISO, startOfWeek, endOfWeek, isWithinInterval, format, differenceInCalendarDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, getDay, addDays } from "date-fns";
+import { parseISO, startOfWeek, endOfWeek, isWithinInterval, format, differenceInCalendarDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, getDay, addDays, isValid } from "date-fns";
 
 /** Worked hours for one session (excludes lunch). */
 export function sessionHours(s: Session): number {
@@ -33,6 +33,23 @@ export function fmtDate(iso: string): string {
 export function progressPct(logged: number, required: number): number {
   if (!required) return 0;
   return Math.min(100, (logged / required) * 100);
+}
+
+export function predictFinishDate(logged: number, required: number, startDate: string, referenceDate: Date = new Date()): string | null {
+  if (!required || !logged) return null;
+
+  const start = parseISO(startDate);
+  if (!isValid(start)) return null;
+
+  const remaining = Math.max(0, required - logged);
+  if (remaining <= 0) return "Completed";
+
+  const elapsedDays = Math.max(1, differenceInCalendarDays(referenceDate, start) + 1);
+  const avgPerDay = logged / elapsedDays;
+  if (avgPerDay <= 0) return null;
+
+  const daysNeeded = Math.ceil(remaining / avgPerDay);
+  return format(addDays(start, daysNeeded), "MMM d, yyyy");
 }
 
 export interface CalendarDay {
