@@ -51,7 +51,7 @@ export default function Dashboard() {
   const weekHrs  = totalHours(week);
   const pct      = progressPct(logged, settings.required_hours);
   const remaining = Math.max(0, settings.required_hours - logged);
-  const predictedFinish = predictFinishDate(logged, settings.required_hours, settings.start_date);
+  const predictedFinish = predictFinishDate(sessions, settings.required_hours, settings.start_date);
 
   if (loading) {
     return (
@@ -95,6 +95,7 @@ export default function Dashboard() {
           <div className="border-l border-border pl-4">
             <span className="text-muted text-xs font-mono block">Predicted finish</span>
             <span className="font-mono font-medium">{predictedFinish ?? "Add a start date"}</span>
+            <span className="text-[11px] text-muted mt-1 block">Based on your recent pace</span>
           </div>
         </div>
       </div>
