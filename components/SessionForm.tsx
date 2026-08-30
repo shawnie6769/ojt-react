@@ -250,24 +250,39 @@ export default function SessionForm({ initial, onSave, onCancel, onPhotosUpdate 
               {photos.map((photo) => (
                 <div key={photo.driveFileId} className="relative group">
                   <a
-                    href={photo.webViewLink}
-                    target="_blank"
+                    href={photo.webViewLink || "#"}
+                    target={photo.webViewLink ? "_blank" : undefined}
                     rel="noopener noreferrer"
                     className="block aspect-square rounded-lg overflow-hidden bg-border border border-border/50 hover:border-accent/50 transition-colors"
                     title="Click to view in Google Drive"
                   >
-                    {photo.thumbnailLink ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={photo.thumbnailLink}
-                        alt="Session photo"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted">
-                        📷
+                    <div className="relative h-full w-full">
+                      {photo.thumbnailLink ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={photo.thumbnailLink}
+                          alt="Session photo"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                          onError={(event) => {
+                            const image = event.currentTarget;
+                            image.style.display = "none";
+                            const fallback = image.parentElement?.querySelector("[data-fallback]") as HTMLElement | null;
+                            if (fallback) {
+                              fallback.style.display = "flex";
+                            }
+                          }}
+                        />
+                      ) : null}
+
+                      <div
+                        data-fallback
+                        className="hidden absolute inset-0 items-center justify-center text-lg text-muted bg-border/70"
+                        aria-label="Photo unavailable"
+                      >
+                        🖼️
                       </div>
-                    )}
+                    </div>
                   </a>
 
                   <button

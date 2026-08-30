@@ -13,6 +13,18 @@ interface PhotoMetadata {
   uploadedAt: string;
 }
 
+function getFallbackThumbnailUrl(fileId: string): string {
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w320`;
+}
+
+function normalizeThumbnailUrl(fileId: string, thumbnailLink?: string): string {
+  if (thumbnailLink && thumbnailLink.includes("googleusercontent.com") || thumbnailLink?.includes("drive.google.com")) {
+    return thumbnailLink;
+  }
+
+  return getFallbackThumbnailUrl(fileId);
+}
+
 interface UploadResponse {
   photos: PhotoMetadata[];
 }
@@ -122,10 +134,31 @@ async function uploadFile(
     throw new Error(`Failed to upload file "${fileName}"`);
   }
 
+  try {
+    // These photos are intentionally link-accessible for this app rather than fully private.
+    await drive.permissions.create({
+      fileId,
+      requestBody: { role: "reader", type: "anyone" },
+      fields: "id",
+    });
+  } catch (permissionError) {
+    console.warn(`Drive file sharing warning for ${fileName}:`, permissionError);
+  }
+
+  const fileMeta = await drive.files.get({
+    fileId,
+    fields: "id, webViewLink, thumbnailLink",
+  });
+
+  const thumbnailLink = normalizeThumbnailUrl(
+    fileId,
+    fileMeta.data.thumbnailLink || createResult.data.thumbnailLink || undefined
+  );
+
   return {
     driveFileId: fileId,
-    webViewLink: createResult.data.webViewLink || "",
-    thumbnailLink: createResult.data.thumbnailLink || "",
+    webViewLink: fileMeta.data.webViewLink || createResult.data.webViewLink || "",
+    thumbnailLink,
     uploadedAt: new Date().toISOString(),
   };
 }
