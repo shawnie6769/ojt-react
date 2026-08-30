@@ -1,5 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
+export type Photo = {
+  driveFileId: string;
+  webViewLink: string;
+  thumbnailLink: string;
+  uploadedAt: string;
+};
+
 export type Session = {
   id: number;
   work_date: string;
@@ -7,6 +14,7 @@ export type Session = {
   time_out: string;
   lunch_minutes: number;
   notes: string;
+  photos: Photo[];
   created_at: string;
 };
 
