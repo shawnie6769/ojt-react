@@ -30,6 +30,10 @@ export function fmtDate(iso: string): string {
   return format(parseISO(iso), "EEE, MMM d yyyy");
 }
 
+export function driveThumbnailUrl(driveFileId: string, size = 320): string {
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w${size}`;
+}
+
 export function progressPct(logged: number, required: number): number {
   if (!required) return 0;
   return Math.min(100, (logged / required) * 100);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Session } from "@/lib/supabase";
-import { sessionHours, fmtDate } from "@/lib/hours";
+import { sessionHours, fmtDate, driveThumbnailUrl } from "@/lib/hours";
 import { Pencil, Trash2 } from "lucide-react";
 import SessionForm from "./SessionForm";
 
@@ -116,23 +116,22 @@ export default function SessionCard({ session, onUpdate, onDelete }: Props) {
                 title="Click to view in Google Drive"
               >
                 <div className="relative h-full w-full">
-                  {photo.thumbnailLink ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={photo.thumbnailLink}
-                      alt="Session photo"
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover"
-                      onError={(event) => {
-                        const image = event.currentTarget;
-                        image.style.display = "none";
-                        const fallback = image.parentElement?.querySelector("[data-fallback]") as HTMLElement | null;
-                        if (fallback) {
-                          fallback.style.display = "flex";
-                        }
-                      }}
-                    />
-                  ) : null}
+                  {/* Drive thumbnail URL is stable and does not expire like thumbnailLink. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={driveThumbnailUrl(photo.driveFileId)}
+                    alt="Session photo"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                    onError={(event) => {
+                      const image = event.currentTarget;
+                      image.style.display = "none";
+                      const fallback = image.parentElement?.querySelector("[data-fallback]") as HTMLElement | null;
+                      if (fallback) {
+                        fallback.style.display = "flex";
+                      }
+                    }}
+                  />
 
                   <div
                     data-fallback

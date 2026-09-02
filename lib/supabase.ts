@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 export type Photo = {
   driveFileId: string;
   webViewLink: string;
-  thumbnailLink: string;
+  thumbnailLink?: string;
   uploadedAt: string;
 };
 

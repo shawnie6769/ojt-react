@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Session, Photo } from "@/lib/supabase";
-import { sessionHours } from "@/lib/hours";
+import { sessionHours, driveThumbnailUrl } from "@/lib/hours";
 import { X, Camera, Loader, AlertCircle } from "lucide-react";
 
 type FormValues = {
@@ -257,23 +257,22 @@ export default function SessionForm({ initial, onSave, onCancel, onPhotosUpdate 
                     title="Click to view in Google Drive"
                   >
                     <div className="relative h-full w-full">
-                      {photo.thumbnailLink ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={photo.thumbnailLink}
-                          alt="Session photo"
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                          onError={(event) => {
-                            const image = event.currentTarget;
-                            image.style.display = "none";
-                            const fallback = image.parentElement?.querySelector("[data-fallback]") as HTMLElement | null;
-                            if (fallback) {
-                              fallback.style.display = "flex";
-                            }
-                          }}
-                        />
-                      ) : null}
+                      {/* Drive thumbnail URLs are stable and do not expire like stored thumbnailLink values. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={driveThumbnailUrl(photo.driveFileId)}
+                        alt="Session photo"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          image.style.display = "none";
+                          const fallback = image.parentElement?.querySelector("[data-fallback]") as HTMLElement | null;
+                          if (fallback) {
+                            fallback.style.display = "flex";
+                          }
+                        }}
+                      />
 
                       <div
                         data-fallback
