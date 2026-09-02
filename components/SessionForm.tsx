@@ -22,19 +22,20 @@ interface Props {
   onPhotosUpdate?: (sessionId: number, photos: Photo[]) => Promise<void>;
 }
 
-const today = format(new Date(), "yyyy-MM-dd");
-
-const defaults: FormValues = {
-  work_date: today,
-  time_in: "09:00",
-  time_out: "18:00",
-  lunch_minutes: 60,
-  notes: "",
-  photos: [],
-};
+function getDefaultValues(): FormValues {
+  const now = new Date();
+  return {
+    work_date: format(now, "yyyy-MM-dd"),
+    time_in: format(now, "HH:mm"),
+    time_out: "18:00",
+    lunch_minutes: 60,
+    notes: "",
+    photos: [],
+  };
+}
 
 export default function SessionForm({ initial, onSave, onCancel, onPhotosUpdate }: Props) {
-  const [values, setValues] = useState<FormValues>(
+  const [values, setValues] = useState<FormValues>(() =>
     initial
       ? {
           work_date: initial.work_date,
@@ -44,7 +45,7 @@ export default function SessionForm({ initial, onSave, onCancel, onPhotosUpdate 
           notes: initial.notes,
           photos: initial.photos ?? [],
         }
-      : defaults
+      : getDefaultValues()
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
